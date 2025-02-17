@@ -2,27 +2,26 @@ import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
-// ✅ Create and Export Axios Instance
 export const api = axios.create({
   baseURL: API_URL,
-  withCredentials: true, // Ensures Laravel Sanctum authentication works
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
 
-// ✅ TypeScript Interface for Items
-export interface Item {
-  id: number;
-  name: string;
-  description?: string;
-  price: number;
-  quantity: number;
-}
+// ✅ Attach JWT token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 
 // ✅ Get all items
-export async function getItems(): Promise<Item[]> {
+export async function getItems() {
   try {
     const response = await api.get("/items");
     return response.data;
@@ -32,8 +31,8 @@ export async function getItems(): Promise<Item[]> {
   }
 }
 
-// ✅ Create an item
-export async function createItem(data: Omit<Item, "id">) {
+// ✅ Create item
+export async function createItem(data: { name: string; description?: string }) {
   try {
     const response = await api.post("/items", data);
     return response.data;
@@ -43,8 +42,8 @@ export async function createItem(data: Omit<Item, "id">) {
   }
 }
 
-// ✅ Update an item
-export async function updateItem(id: number, data: Partial<Item>) {
+// ✅ Update item
+export async function updateItem(id: number, data: { name?: string; description?: string }) {
   try {
     const response = await api.put(`/items/${id}`, data);
     return response.data;
@@ -54,7 +53,7 @@ export async function updateItem(id: number, data: Partial<Item>) {
   }
 }
 
-// ✅ Delete an item
+// ✅ DELETE item (This was missing!)
 export async function deleteItem(id: number) {
   try {
     const response = await api.delete(`/items/${id}`);

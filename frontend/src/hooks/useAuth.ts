@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login, logout, getUser } from "@/lib/auth"; // ✅ Ensure correct imports
+import { login, logout, getUser } from "@/lib/auth";
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -10,7 +10,7 @@ export const useAuth = () => {
   const handleLogin = async (email: string, password: string) => {
     setLoading(true);
     setError(null);
-    
+
     const success = await login(email, password);
     setLoading(false);
 
