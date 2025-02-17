@@ -5,15 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ItemController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// ✅ Authentication Routes
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+Route::get('/user', [AuthController::class, 'user'])->middleware('auth:api');
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
-
-Route::middleware('auth:sanctum')->group(function () {
+// ✅ Protected Item Routes (Require JWT Authentication)
+Route::middleware('auth:api')->group(function () {
     Route::get('/items', [ItemController::class, 'index']);
     Route::post('/items', [ItemController::class, 'store']);
     Route::get('/items/{id}', [ItemController::class, 'show']);
